@@ -3,54 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prototype: Basic Layout</title>
+  <title>Prototype 2B — Circular Progress Ring — V01</title>
   <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
 <main>
   <header>
-    <h1>Prototype: Basic Layout</h1>
+    <h1>Prototype 2B — Circular Progress Ring</h1>
   </header>
-
   <section class="players">
     <section class="player">
       <p>Player A</p>
       <h2>Rhythm Input</h2>
-
       <div class="keys">
         <button type="button" class="sound-key" data-key="a">A</button>
         <button type="button" class="sound-key" data-key="s">S</button>
         <button type="button" class="sound-key" data-key="d">D</button>
         <button type="button" class="sound-key" data-key="f">F</button>
       </div>
-
       <p>Press keys or click</p>
     </section>
-
     <section class="shared">
       <p>Shared State</p>
-      <div class="shared-display" aria-hidden="true">
-        <div class="sync-point"></div>
+      <div class="shared-display" data-feedback="ring" aria-hidden="true">
+        <svg class="feedback-svg" viewBox="0 0 120 120"><circle class="ring-track" cx="60" cy="60" r="50" /><circle class="progress-fill" cx="60" cy="60" r="50" pathLength="100" transform="rotate(-90 60 60)" /></svg>
       </div>
       <h2>Sync Point</h2>
       <p class="sync-status">Not connected</p>
     </section>
-
     <section class="player">
       <p>Player B</p>
       <h2>Spatial Input</h2>
-      <div class="spatial-field" aria-label="Spatial input placeholder">
+      <div class="spatial-field" data-mode="hover" tabindex="0" aria-label="Move to control">
         <div class="target" aria-hidden="true"></div>
+        <div class="cursor-dot" aria-hidden="true" hidden></div>
       </div>
       <p class="input-status" aria-live="polite">Not connected</p>
     </section>
   </section>
-
+  <p class="audio-status" role="status"></p>
 </main>
 <script src="script.js"></script>
 </body>
 </html>
-
 
