@@ -4,14 +4,13 @@ function pressKey(key) {
   const button = buttons.find(button => button.dataset.key === key);
   if (!button) return;
   button.classList.add('is-active');
+
 }
 
 function releaseKey(key) {
   const button = buttons.find(button => button.dataset.key === key);
   if (button) button.classList.remove('is-active');
 }
-
-
 
 document.addEventListener('keydown', function (event) {
   const key = event.key.toLowerCase();
@@ -23,7 +22,6 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('keyup', function (event) {
   releaseKey(event.key.toLowerCase());
 });
-
 
 buttons.forEach(function (button) {
   const key = button.dataset.key;
@@ -44,6 +42,6 @@ buttons.forEach(function (button) {
 
 window.addEventListener('blur', function () {
   buttons.forEach(button => releaseKey(button.dataset.key));
-});
 
+});
 
