@@ -3,16 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prototype 1A: Hover Control — V01</title>
+  <title>Prototype 1A: Hover Control</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <main>
   <header>
     <h1>Prototype 1A: Hover Control</h1>
   </header>
-
   <section class="players">
     <section class="player">
       <p>Player A</p>
@@ -25,16 +23,14 @@
       </div>
       <p>Press keys or click</p>
     </section>
-
     <section class="shared">
       <p>Shared State</p>
       <div class="shared-display" data-feedback="color" aria-hidden="true">
         <div class="sync-point"></div>
       </div>
       <h2>Sync Point</h2>
-      <p class="sync-status">Not connected</p>
+      <p class="sync-status">Calm</p>
     </section>
-
     <section class="player">
       <p>Player B</p>
       <h2>Spatial Input</h2>
@@ -42,13 +38,13 @@
         <div class="target" aria-hidden="true"></div>
         <div class="cursor-dot" aria-hidden="true" hidden></div>
       </div>
-      <p class="input-status" aria-live="polite">Not connected</p>
+      <p class="input-status" aria-live="polite">Move to control</p>
     </section>
   </section>
-
   <p class="audio-status" role="status"></p>
 </main>
 <script src="script.js"></script>
 </body>
 </html>
+
 

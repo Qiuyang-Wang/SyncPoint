@@ -5,7 +5,7 @@ body {
   padding: 32px;
   font-family: "Open Sans", sans-serif;
   color: #222222;
-  background: #ffffff;
+  background: #e8e8e8;
 }
 main { max-width: 1100px; margin: auto; }
 header { border-bottom: 1px solid #222222; padding-bottom: 20px; }
@@ -24,13 +24,12 @@ p { line-height: 1.5; }
   min-height: 110px;
   border: 1px solid #222222;
   background: white;
-  color: #222222;
+  color: #d82e2f;
   font: inherit;
   font-size: 44px;
   cursor: pointer;
 }
-
-.sound-key.is-active { background: #222222; color: white; }
+.sound-key.is-active { background: #222222; }
 .sound-key:focus-visible, .spatial-field:focus-visible { outline: 3px double #222222; outline-offset: 3px; }
 .shared { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .shared-display { width: 120px; height: 120px; display: grid; place-items: center; }
@@ -48,7 +47,6 @@ p { line-height: 1.5; }
   position: relative;
   overflow: hidden;
 }
-
 .target, .cursor-dot { position: absolute; left: 50%; top: 50%; border-radius: 50%; transform: translate(-50%, -50%); }
 .target { width: 18px; height: 18px; background: #222222; pointer-events: none; }
 .cursor-dot { width: 12px; height: 12px; background: #d82e2f; pointer-events: none; z-index: 1; }
@@ -61,4 +59,5 @@ p { line-height: 1.5; }
   .players { grid-template-columns: 1fr; }
   .shared { padding: 32px 0; }
 }
+
 
