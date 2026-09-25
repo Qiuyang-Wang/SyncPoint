@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../CreativeTool" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../Mino" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../QiuyangWang.github.io" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../StudioWorkIndex2610" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../audioInstrument" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../debuggingExercise" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../input-event-demos" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../konvaTemplate" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../performanceExercise" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../specialisationWorkIndex" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../testStudioProject" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../tonejS-template" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../undoRedoExercise" vcs="Git" />
+  </component>
+</project>
