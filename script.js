@@ -1,10 +1,102 @@
+const field = document.querySelector('.spatial-field');
+const cursor = document.querySelector('.cursor-dot');
+const target = document.querySelector('.target');
+const inputStatus = document.querySelector('.input-status');
+const syncStatus = document.querySelector('.sync-status');
+const audioStatus = document.querySelector('.audio-status');
+const idleText = 'Move to control';
+let x = 0.5;
+let y = 0.5;
+let targetX = 0.5;
+let targetY = 0.5;
+let active = false;
+let stability = 0;
+let audio;
+let filter;
+let pan;
+
+function clamp(value, min = 0, max = 1) {
+  return Math.max(min, Math.min(max, value));
+}
+
+async function playNote(key) {
+  try {
+    if (!audio) {
+      audio = new (window.AudioContext || window.webkitAudioContext)();
+      filter = audio.createBiquadFilter();
+      filter.type = 'lowpass';
+      pan = audio.createStereoPanner();
+      filter.connect(pan);
+      pan.connect(audio.destination);
+    }
+    await audio.resume();
+    const now = audio.currentTime;
+    const frequencies = { a: 110, s: 174.61, d: 261.63, f: 392 };
+    const tone = audio.createOscillator();
+    const envelope = audio.createGain();
+    tone.frequency.value = frequencies[key];
+    envelope.gain.setValueAtTime(0, now);
+    envelope.gain.linearRampToValueAtTime(0.20, now + 0.015);
+    envelope.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+    tone.connect(envelope);
+    envelope.connect(filter);
+    tone.start(now);
+    tone.stop(now + 0.3);
+    tone.onended = function () { tone.disconnect(); envelope.disconnect(); };
+    updateFeedback(0);
+    audioStatus.textContent = '';
+  } catch (error) {
+    audioStatus.textContent = 'Audio could not start. Try clicking a sound key.';
+  }
+}
+
+function recordPosition(event) {
+  const rect = field.getBoundingClientRect();
+  x = clamp((event.clientX - rect.left) / rect.width, 6 / rect.width, 1 - 6 / rect.width);
+  y = clamp((event.clientY - rect.top) / rect.height, 6 / rect.height, 1 - 6 / rect.height);
+  active = true;
+  cursor.hidden = false;
+  cursor.style.left = x * 100 + '%';
+  cursor.style.top = y * 100 + '%';
+  inputStatus.textContent = 'Input active';
+  updateFeedback(0);
+}
+
+field.addEventListener('pointermove', recordPosition);
+field.addEventListener('pointerleave', function () {
+  active = false;
+  cursor.hidden = true;
+  inputStatus.textContent = idleText;
+  updateFeedback(0);
+});
+
+function updateFeedback(time) {
+  const rect = field.getBoundingClientRect();
+  const distance = Math.hypot((x - targetX) * rect.width, (y - targetY) * rect.height);
+  stability = active ? clamp(1 - distance / (Math.min(rect.width, rect.height) * 0.7)) : 0;
+  syncStatus.textContent = stability > 0.7 ? 'Stable' : stability > 0.3 ? 'Connecting' : 'Unstable';
+  if (audio) {
+    pan.pan.setTargetAtTime(x * 2 - 1, audio.currentTime, 0.03);
+    filter.frequency.setTargetAtTime(12000 * Math.pow(500 / 12000, y), audio.currentTime, 0.03);
+  }
+  const level = stability > 0.7 ? 1 : stability > 0.3 ? 0.5 : 0;
+  let path = '';
+  const amplitude = 3 + (1 - level) * 17;
+  for (let point = 0; point <= 88; point += 2) {
+    const height = 60 + Math.sin(point / 10) * amplitude;
+    path += (point === 0 ? 'M' : ' L') + (16 + point) + ' ' + height.toFixed(2);
+  }
+  document.querySelector('.waveform').setAttribute('d', path);
+}
+updateFeedback(0);
+
 const buttons = Array.from(document.querySelectorAll('.sound-key'));
 
 function pressKey(key) {
   const button = buttons.find(button => button.dataset.key === key);
   if (!button) return;
   button.classList.add('is-active');
-
+  playNote(key);
 }
 
 function releaseKey(key) {
@@ -42,6 +134,9 @@ buttons.forEach(function (button) {
 
 window.addEventListener('blur', function () {
   buttons.forEach(button => releaseKey(button.dataset.key));
-
+  active = false;
+  cursor.hidden = true;
+  inputStatus.textContent = idleText;
+  updateFeedback(0);
 });
 
