@@ -37,13 +37,25 @@ async function playNote(key) {
     const envelope = audio.createGain();
     tone.frequency.value = frequencies[key];
     envelope.gain.setValueAtTime(0, now);
-    envelope.gain.linearRampToValueAtTime(0.20, now + 0.015);
+    envelope.gain.linearRampToValueAtTime(0.12 + (1 - stability) * 0.10, now + 0.015);
     envelope.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
     tone.connect(envelope);
     envelope.connect(filter);
     tone.start(now);
     tone.stop(now + 0.3);
     tone.onended = function () { tone.disconnect(); envelope.disconnect(); };
+    const rough = audio.createOscillator();
+    const roughVolume = audio.createGain();
+    rough.type = 'sawtooth';
+    rough.frequency.value = frequencies[key] * 1.025;
+    roughVolume.gain.setValueAtTime(0, now);
+    roughVolume.gain.linearRampToValueAtTime((1 - stability) * 0.10, now + 0.015);
+    roughVolume.gain.linearRampToValueAtTime(0, now + 0.28);
+    rough.connect(roughVolume);
+    roughVolume.connect(filter);
+    rough.start(now);
+    rough.stop(now + 0.3);
+    rough.onended = function () { rough.disconnect(); roughVolume.disconnect(); };
     updateFeedback(0);
     audioStatus.textContent = '';
   } catch (error) {
@@ -90,10 +102,35 @@ function updateFeedback(time) {
     pan.pan.setTargetAtTime(x * 2 - 1, audio.currentTime, 0.03);
     filter.frequency.setTargetAtTime(12000 * Math.pow(500 / 12000, y), audio.currentTime, 0.03);
   }
-  const level = stability > 0.7 ? 1 : stability > 0.3 ? 0.5 : 0;
+  const level = stability;
   const circle = document.querySelector('.sync-point');
   circle.style.backgroundColor = 'rgb(' + Math.round(255 - 39 * level) + ', ' + Math.round(255 - 209 * level) + ', ' + Math.round(255 - 208 * level) + ')';
 }
+
+let startX = 0.5;
+let startY = 0.5;
+let goalX = 0.2 + Math.random() * 0.6;
+let goalY = 0.2 + Math.random() * 0.6;
+let startTime = null;
+
+function animate(time) {
+  if (startTime === null) startTime = time;
+  const progress = clamp((time - startTime) / 2800);
+  targetX = startX + (goalX - startX) * progress;
+  targetY = startY + (goalY - startY) * progress;
+  target.style.left = targetX * 100 + '%';
+  target.style.top = targetY * 100 + '%';
+  if (progress === 1) {
+    startX = targetX;
+    startY = targetY;
+    goalX = 0.12 + Math.random() * 0.76;
+    goalY = 0.12 + Math.random() * 0.76;
+    startTime = time;
+  }
+  updateFeedback(time);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
 updateFeedback(0);
 
 const buttons = Array.from(document.querySelectorAll('.sound-key'));
