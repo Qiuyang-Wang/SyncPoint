@@ -1,48 +1,107 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prototype 1B: Click Position Input</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<main>
-  <header>
+<main class="prototype-shell">
+  <!--
+    Place the title and a brief instruction before the interactive area, so that players know how to proceed from the outset.
+    Keep the instructions brief, leaving room for actual interaction and visual feedback.
+  -->
+  <header class="page-header">
     <h1>Prototype 1B: Click Position Input</h1>
+    <p>Click the mouse to record the coordinates</p>
   </header>
-  <section class="players">
-    <section class="player">
-      <p>Player A</p>
-      <h2>Rhythm Input</h2>
-      <div class="keys">
-        <button type="button" class="sound-key" data-key="a">A</button>
-        <button type="button" class="sound-key" data-key="s">S</button>
-        <button type="button" class="sound-key" data-key="d">D</button>
-        <button type="button" class="sound-key" data-key="f">F</button>
+
+  <!--
+    Rhythm inputs and spatial inputs are arranged on the left and right respectively, with the combined result displayed in the centre, to help players understand their respective roles.
+    The six prototypes follow this structure, minimising other layout differences when comparing input methods or feedback graphics.
+  -->
+  <section class="interaction-grid" aria-label="Two-player audio interface">
+    <section class="player-panel player-a" aria-labelledby="player-a-title">
+      <div class="section-heading">
+        <p>Player A</p>
+        <h2 id="player-a-title">Rhythm Input</h2>
       </div>
-      <p>Press keys or click</p>
+
+      <!--
+        Native buttons are used here to clearly indicate the action to be performed.
+        The `data-key` attribute links each button to its corresponding sound, whilst the event and sound-play logic are centralised in `script.js`.
+      -->
+      <div class="key-grid" aria-label="Sound controls">
+        <button class="sound-key" type="button" data-key="a" aria-label="Play sound A">
+          <span>A</span>
+        </button>
+        <button class="sound-key" type="button" data-key="s" aria-label="Play sound S">
+          <span>S</span>
+        </button>
+        <button class="sound-key" type="button" data-key="d" aria-label="Play sound D">
+          <span>D</span>
+        </button>
+        <button class="sound-key" type="button" data-key="f" aria-label="Play sound F">
+          <span>F</span>
+        </button>
+      </div>
+
+      <p class="panel-instruction">Press Keys Or Click</p>
     </section>
-    <section class="shared">
+
+    <!--
+      The shared circle remains fixed in position and size, with its fill colour indicating how close the current value is to the target.
+      The status text next to the graphic provides additional context to ensure meaning is not conveyed solely through colour.
+    -->
+    <section class="sync-panel" aria-labelledby="sync-title">
       <p>Shared State</p>
-      <div class="shared-display" data-feedback="color" aria-hidden="true">
-        <div class="sync-point"></div>
-      </div>
-      <h2>Sync Point</h2>
-      <p class="sync-status">Calm</p>
+      <div class="sync-point" aria-hidden="true"></div>
+      <h2 id="sync-title">Sync Point</h2>
+      <p class="sync-status" aria-live="polite">Noisy</p>
     </section>
-    <section class="player">
-      <p>Player B</p>
-      <h2>Spatial Input</h2>
-      <div class="spatial-field" data-mode="click" tabindex="0" aria-label="Click to record">
+
+    <section class="player-panel player-b" aria-labelledby="player-b-title">
+      <div class="section-heading">
+        <p>Player B</p>
+        <h2 id="player-b-title">Spatial Input</h2>
+      </div>
+
+      <!--
+        Select ‘Click mode’ here; the red dot indicates the position of the most recent record.
+        The area can be highlighted to make it easier to identify the current position; actual coordinate input is still handled by mouse events in the script.
+      -->
+      <div
+              class="spatial-field"
+              data-input-mode="click"
+              role="application"
+              tabindex="0"
+              aria-label="Click the mouse to record the coordinates"
+      >
+        <!--
+          The directional text explains the relationship between the left-right sound image and the up-down timbre, helping players to associate their movement direction with changes in sound.
+          The dark dots represent movement targets, whilst the red dots indicate the player’s inputs; the distance between the two is used to calculate stability.
+        -->
+        <span class="axis-label axis-left">L</span>
+        <span class="axis-label axis-right">R</span>
+        <span class="axis-label axis-top">Bright</span>
+        <span class="axis-label axis-bottom">Muted</span>
         <div class="target" aria-hidden="true"></div>
         <div class="cursor-dot" aria-hidden="true"></div>
       </div>
-      <p class="input-status" aria-live="polite">Click to record</p>
+      <p class="spatial-status" aria-live="polite">Click to control</p>
     </section>
   </section>
-  <p class="audio-status" role="status"></p>
+
+  <!--
+    When the audio fails to start, display a prompt below the interaction area to prevent players from mistaking the absence of sound for their actions not taking effect.
+  -->
+  <p class="audio-message" role="status" aria-live="polite"></p>
 </main>
+
+<!--
+  Load the script only after the buttons and feedback elements on the page have been created, so that events can be bound to existing interface elements.
+-->
 <script src="script.js"></script>
 </body>
 </html>
