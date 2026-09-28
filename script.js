@@ -273,7 +273,7 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   }
 
 
-  // Here, we first calculate a stability value, then apply the result to the shared graphic, status text and sound, to avoid the three types of feedback using different criteria.
+  // Here, I first calculate a stability value, then apply the result to the shared graphic, status text and sound, to avoid the three types of feedback using different criteria.
   // When the mouse leaves the area, the stability value is set to 0, whilst retaining the audio position and filter position, to prevent the left and right directions from suddenly jumping back to the centre upon exiting the area.
 
   function updateSharedState() {
