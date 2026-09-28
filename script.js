@@ -93,6 +93,10 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   const syncStatus = document.querySelector('.sync-status');
   const audioMessage = document.querySelector('.audio-message');
   const targetDot = document.querySelector('.target');
+
+  const audioWarning = document.querySelector('#audioWarning');
+  const audioWarningOk = document.querySelector('#audioWarningOk');
+
   const target = { x: 0.5, y: 0.5 };
   const pointer = { clientX: 0, clientY: 0, inside: false };
   let journeyStart = { ...target };
@@ -111,6 +115,16 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     filterFrequency: 12000,
     stability: 0,
   };
+
+
+  // Ask players to check the volume before they start
+  if (audioWarning && audioWarningOk) {
+    audioWarning.showModal();
+
+    audioWarningOk.addEventListener('click', function () {
+      audioWarning.close();
+    });
+  }
 
 
   // The four short notes share the same filter and panning nodes, allowing a single position adjustment by Player B to affect different keys played by Player A.
