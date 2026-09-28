@@ -329,6 +329,54 @@ h1 {
   font-size: 0.72rem;
 }
 
+.audio-message {
+  min-height: 1rem;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.audio-message {
+  min-height: 1rem;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.audio-warning {
+  width: min(900px, calc(100% - 40px));
+  padding: 32px 26px 24px;
+  border: 2px solid var(--accent);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: "Open Sans", sans-serif;
+}
+
+.audio-warning::backdrop {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.audio-warning p {
+  margin: 0 0 28px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.audio-warning button {
+  padding: 5px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.audio-warning button:hover {
+  background: #e8e8e8;
+}
+
+
 /*
   When the window narrows, rearrange the three columns vertically to prevent the buttons and text input area from being squeezed to the point where they become difficult to use.
   Use horizontal separators between sections to preserve the original reading order.
