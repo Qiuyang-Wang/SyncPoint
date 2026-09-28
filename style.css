@@ -116,7 +116,6 @@ h1 {
 }
 
 /*
-  四个按键保持相同的尺寸和两列排列，不用视觉大小暗示某个声音更重要。
   The four buttons are all the same size and arranged in two columns to maintain visual balance.
  */
 .key-grid {
@@ -152,7 +151,6 @@ h1 {
 }
 
 /*
-  深色底和轻微缩小一起表达按下状态，让键盘触发与鼠标按下都有可见回应。
   A darker background and a slight reduction in size are used to indicate the pressed state, making the keyboard’s response visible.
   The duration of these changes is kept short to prevent the key feedback from appearing sluggish within a continuous rhythm.
  */
@@ -188,7 +186,6 @@ h1 {
 }
 
 /*
-  固定反馈容器的占位大小，让圆的伸缩或内部图形变化不会推开周围的文字。
   Set the size of the feedback container so that changes to the circle do not push the surrounding text out of place.
   The three shared feedback options use the same display area, making it easier to compare the differences in how the graphics are presented.
  */
@@ -203,7 +200,6 @@ h1 {
 
 /*
   This is the size-based feedback style for 2A; the red fill remains consistent, with stability indicated by size.
-  宽高的短过渡用于缓和连续更新产生的跳变；其他反馈版本不会显示这个圆元素。
   The transition between width and height is used to soften the changes caused by continuous updates; other feedback versions do not display this circular element.
  */
 .sync-point {
@@ -236,7 +232,6 @@ h1 {
 
 /*
   This set of styles is intended for 2B’s circular feedback, with the red stroke providing contrast against the dark track.
-  描边间隔与 SVG 中的 pathLength 对齐后，脚本就能直接用百分比控制可见圆周。
   Once the stroke spacing has been aligned with the `pathLength` in the SVG, the script can control the circumference directly using percentages.
  */
 .progress-fill {
@@ -249,7 +244,6 @@ h1 {
 }
 
 /*
-  指针和波形沿用同一种红色，让不同版本保持共同的视觉识别。
   Pointers and waveforms are rendered in the same shade of red.
   Rounded line ends soften the harshness of sharp turns in fine lines, whilst the internal paths are left unfilled.
  */
@@ -309,7 +303,6 @@ h1 {
 
 /*
   The target point is used solely for tracking and comparison; it does not accept mouse clicks, to prevent it from obscuring the input area beneath it.
-  平移半个自身尺寸后，脚本给出的坐标对应圆心，便于判断两点是否接近。
   After shifting by half its own size, the script returns the coordinates of the corresponding centre point, making it easier to determine whether the two points are close to one another.
  */
 .target {
@@ -361,10 +354,57 @@ h1 {
   font-size: 0.72rem;
 }
 
+.audio-message {
+  min-height: 1rem;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.audio-message {
+  min-height: 1rem;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.audio-warning {
+  width: min(900px, calc(100% - 40px));
+  padding: 32px 26px 24px;
+  border: 2px solid var(--accent);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: "Open Sans", sans-serif;
+}
+
+.audio-warning::backdrop {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.audio-warning p {
+  margin: 0 0 28px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.audio-warning button {
+  padding: 5px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.audio-warning button:hover {
+  background: #e8e8e8;
+}
+
+
+
 /*
-  窗口变窄时把三列改为纵向排列，避免按键和空间输入区被挤得难以操作。
   When the window narrows, rearrange the three columns vertically to prevent the buttons and text input area from being squeezed to the point where they become difficult to use.
-  分区之间改用横向分隔，保留原来的阅读顺序和角色关系。
   Use horizontal separators between sections to preserve the original reading order.
  */
 @media (max-width: 820px) {
