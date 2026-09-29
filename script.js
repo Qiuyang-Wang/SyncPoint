@@ -76,9 +76,6 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   const buttons = Array.from(document.querySelectorAll('.sound-key'));
   const spatialField = document.querySelector('.spatial-field');
 
-  //本页面使用悬停模式，由 HTML 中的设置选择对应事件分支。
-  //script保留了其他模式的判断，比较原型时可以共用映射逻辑；有事件监听不代表所有模式都会响应。
-
   const inputMode = spatialField.dataset.inputMode || 'hover';
   const idleLabels = {
     hover: 'Move to control',
