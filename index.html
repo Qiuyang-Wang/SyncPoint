@@ -1,56 +1,76 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prototype: Basic Layout</title>
-  <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SyncPoint — Sound Study</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-<main>
-  <header>
-    <h1>Prototype: Basic Layout</h1>
+<main class="prototype-shell">
+  <header class="page-header">
+    <h1>SyncPoint</h1>
+    <p>Follow the target point. The waveform becomes calmer as stability increases.</p>
   </header>
-
-  <section class="players">
-    <section class="player">
-      <p>Player A</p>
-      <h2>Rhythm Input</h2>
-
-      <div class="keys">
-        <button type="button" class="sound-key" data-key="a">A</button>
-        <button type="button" class="sound-key" data-key="s">S</button>
-        <button type="button" class="sound-key" data-key="d">D</button>
-        <button type="button" class="sound-key" data-key="f">F</button>
+  <section class="interaction-grid" aria-label="Two-player audio interface">
+    <section class="player-panel player-a" aria-labelledby="player-a-title">
+      <div class="section-heading">
+        <p>Player A</p>
+        <h2 id="player-a-title">Rhythm Input</h2>
+      </div>
+      <div class="key-grid" aria-label="Sound controls">
+        <button class="sound-key" type="button" data-key="a" aria-label="Play sound A">
+          <span>A</span>
+        </button>
+        <button class="sound-key" type="button" data-key="s" aria-label="Play sound S">
+          <span>S</span>
+        </button>
+        <button class="sound-key" type="button" data-key="d" aria-label="Play sound D">
+          <span>D</span>
+        </button>
+        <button class="sound-key" type="button" data-key="f" aria-label="Play sound F">
+          <span>F</span>
+        </button>
       </div>
 
-      <p>Press keys or click</p>
+      <p class="panel-instruction">Press Keys Or Click</p>
     </section>
-
-    <section class="shared">
+    <section class="sync-panel" aria-labelledby="sync-title">
       <p>Shared State</p>
-      <div class="shared-display" aria-hidden="true">
-        <div class="sync-point"></div>
+      <div class="sync-display" aria-hidden="true">
+        <svg class="feedback-svg" viewBox="0 0 120 120">
+          <circle class="wave-frame" cx="60" cy="60" r="56" />
+          <path class="waveform" d="M 16 60 L 104 60" />
+        </svg>
       </div>
-      <h2>Sync Point</h2>
-      <p class="sync-status">Not connected</p>
+      <h2 id="sync-title">Sync Point</h2>
+      <p class="sync-status" aria-live="polite">Noisy</p>
     </section>
 
-    <section class="player">
-      <p>Player B</p>
-      <h2>Spatial Input</h2>
-      <div class="spatial-field" aria-label="Spatial input placeholder">
-        <div class="target" aria-hidden="true"></div>
+    <section class="player-panel player-b" aria-labelledby="player-b-title">
+      <div class="section-heading">
+        <p>Player B</p>
+        <h2 id="player-b-title">Spatial Input</h2>
       </div>
-      <p class="input-status" aria-live="polite">Not connected</p>
+      <div
+              class="spatial-field"
+              data-input-mode="hover"
+              role="application"
+              tabindex="0"
+              aria-label="Follow the moving filled dot. Closer sounds calmer; farther sounds noisier."
+      >
+        <span class="axis-label axis-left">L</span>
+        <span class="axis-label axis-right">R</span>
+        <span class="axis-label axis-top">Bright</span>
+        <span class="axis-label axis-bottom">Muted</span>
+        <div class="target" aria-hidden="true"></div>
+        <div class="cursor-dot" aria-hidden="true"></div>
+      </div>
+      <p class="spatial-status" aria-live="polite">Move to control</p>
     </section>
   </section>
-
+  <p class="audio-message" role="status" aria-live="polite"></p>
 </main>
 <script src="script.js"></script>
 </body>
 </html>
-
-
