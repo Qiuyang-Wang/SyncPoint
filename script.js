@@ -41,10 +41,10 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   if (typeof document === 'undefined') return;
 
   const keySettings = {
-    a: { frequency: 110, duration: 0.42 },
-    s: { frequency: 174.61, duration: 0.38 },
-    d: { frequency: 261.63, duration: 0.34 },
-    f: { frequency: 392, duration: 0.3 },
+    a: { file: 'assets/audio/c-major.wav' },
+    s: { file: 'assets/audio/d-major.wav' },
+    d: { file: 'assets/audio/f-major.wav' },
+    f: { file: 'assets/audio/g-major.wav' },
   };
 
   const buttons = Array.from(document.querySelectorAll('.sound-key'));
@@ -71,6 +71,12 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   let destination = randomDestination();
   let journeyStartedAt = performance.now();
   let journeyDuration = 2800;
+  const rhythmLines = Array.from(document.querySelectorAll('.rhythm-line'));
+  const rhythmStatus = document.querySelector('.rhythm-status');
+  const pressedKeys = new Set();
+  const buttonTimers = {};
+  let rhythmHistory = [];
+  let playerARhythmStable = false;
 
   let audioContext;
   let filterNode;
@@ -78,6 +84,9 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   let roughGain;
   let noiseGain;
   let noiseBuffer;
+  let distortionNode;
+  const chordBuffers = {};
+  const activeVoices = [];
   let currentSpatialValues = {
     pan: 0,
     filterFrequency: 12000,
@@ -108,11 +117,19 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     compressor.attack.value = 0.003;
     compressor.release.value = 0.15;
 
+    distortionNode = audioContext.createWaveShaper();
+    const curve = new Float32Array(256);
+    for (let i = 0; i < curve.length; i++) {
+      const x = i * 2 / (curve.length - 1) - 1;
+      curve[i] = Math.tanh(x * 5);
+    }
+    distortionNode.curve = curve;
+    distortionNode.connect(roughGain);
     roughGain.connect(filterNode);
     noiseGain.connect(pannerNode);
     filterNode.connect(pannerNode);
     pannerNode.connect(masterGain);
-    masterGain.gain.value = 1.2;
+    masterGain.gain.value = 0.65;
     masterGain.connect(compressor);
     compressor.connect(audioContext.destination);
 
@@ -132,62 +149,80 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     pannerNode.pan.setTargetAtTime(currentSpatialValues.pan, now, 0.025);
     filterNode.frequency.setTargetAtTime(currentSpatialValues.filterFrequency, now, 0.025);
     const roughness = Math.pow(1 - currentSpatialValues.stability, 1.4);
-    roughGain.gain.setTargetAtTime(roughness * 0.65, now, 0.035);
-    noiseGain.gain.setTargetAtTime(roughness * 0.5, now, 0.035);
+    roughGain.gain.setTargetAtTime(roughness * 0.35, now, 0.035);
+    noiseGain.gain.setTargetAtTime(roughness * 0.16, now, 0.035);
   }
-  async function playSound(key) {
-    const settings = keySettings[key];
-    if (!settings || !createAudioGraph()) return;
+  async function loadChords() {
+    if (!createAudioGraph()) return;
+    audioMessage.textContent = 'Loading chords…';
+    try {
+      await Promise.all(Object.keys(keySettings).map(async function (key) {
+        const encoded = window.chordAudioData[keySettings[key].file];
+        if (!encoded) throw new Error('Missing chord');
+        const bytes = Uint8Array.from(atob(encoded), character => character.charCodeAt(0));
+        chordBuffers[key] = await audioContext.decodeAudioData(bytes.buffer);
+      }));
+      audioMessage.textContent = '';
+    } catch (error) {
+      audioMessage.textContent = 'Could not load chords. Check assets/audio/chords.js.';
+    }
+  }
 
+  async function playSound(key) {
+    if (!audioContext || !chordBuffers[key]) return;
     if (audioContext.state === 'suspended') {
       try {
         await audioContext.resume();
-        audioMessage.textContent = '';
       } catch (error) {
-        audioMessage.textContent = 'Click a sound button to enable audio.';
+        audioMessage.textContent = 'Click a chord to enable audio.';
         return;
       }
     }
 
     const now = audioContext.currentTime;
-    const oscillator = audioContext.createOscillator();
+    const duration = Math.min(2.6, chordBuffers[key].duration);
+    const source = audioContext.createBufferSource();
     const voiceGain = audioContext.createGain();
-    const roughOscillator = audioContext.createOscillator();
-    const roughEnvelope = audioContext.createGain();
     const noise = audioContext.createBufferSource();
     const noiseEnvelope = audioContext.createGain();
+    source.buffer = chordBuffers[key];
+    voiceGain.gain.setValueAtTime(0, now);
+    voiceGain.gain.linearRampToValueAtTime(0.5, now + 0.005);
+    voiceGain.gain.setValueAtTime(0.5, now + Math.max(0.005, duration - 0.15));
+    voiceGain.gain.linearRampToValueAtTime(0, now + duration);
+    source.connect(voiceGain);
+    voiceGain.connect(filterNode);
+    voiceGain.connect(distortionNode);
 
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(settings.frequency, now);
-    oscillator.frequency.exponentialRampToValueAtTime(
-        Math.max(55, settings.frequency * 0.72),
-        now + settings.duration,
-    );
-
-    [voiceGain, roughEnvelope, noiseEnvelope].forEach(function (envelope) {
-      envelope.gain.setValueAtTime(0.0001, now);
-      envelope.gain.exponentialRampToValueAtTime(0.4, now + 0.018);
-      envelope.gain.exponentialRampToValueAtTime(0.0001, now + settings.duration);
-    });
-    roughOscillator.type = 'sawtooth';
-    roughOscillator.frequency.setValueAtTime(settings.frequency * 1.41, now);
     noise.buffer = noiseBuffer;
     noise.loop = true;
-
-    oscillator.connect(voiceGain);
-    voiceGain.connect(filterNode);
-    roughOscillator.connect(roughEnvelope);
-    roughEnvelope.connect(roughGain);
+    noiseEnvelope.gain.setValueAtTime(0, now);
+    noiseEnvelope.gain.linearRampToValueAtTime(0.08, now + 0.018);
+    noiseEnvelope.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
     noise.connect(noiseEnvelope);
     noiseEnvelope.connect(noiseGain);
-    [oscillator, roughOscillator, noise].forEach(function (source) {
-      source.start(now);
-      source.stop(now + settings.duration + 0.02);
-    });
-    oscillator.onended = function () {
-      [oscillator, roughOscillator, noise, voiceGain, roughEnvelope, noiseEnvelope].forEach(function (node) {
-        node.disconnect();
-      });
+
+    if (activeVoices.length >= 12) {
+      const oldest = activeVoices.shift();
+      oldest.gain.cancelScheduledValues(now);
+      oldest.gain.setTargetAtTime(0, now, 0.01);
+      oldest.source.stop(now + 0.05);
+    }
+    const voice = { source, gain: voiceGain.gain };
+    activeVoices.push(voice);
+    source.start(now);
+    source.stop(now + duration);
+    noise.start(now);
+    noise.stop(now + 0.36);
+    noise.onended = function () {
+      noise.disconnect();
+      noiseEnvelope.disconnect();
+    };
+    source.onended = function () {
+      const index = activeVoices.indexOf(voice);
+      if (index !== -1) activeVoices.splice(index, 1);
+      source.disconnect();
+      voiceGain.disconnect();
     };
   }
 
@@ -199,12 +234,59 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   function triggerKey(key) {
     if (!keySettings[key]) return;
     setButtonState(key, true);
+    window.clearTimeout(buttonTimers[key]);
+    buttonTimers[key] = window.setTimeout(function () { setButtonState(key, false); }, 140);
     playSound(key);
+
+    const lane = document.querySelector(`.rhythm-lane[data-key="${key}"] .lane-beams`);
+    const beam = document.createElement('span');
+    beam.className = 'lane-beam';
+    lane.appendChild(beam);
+    window.setTimeout(function () { beam.remove(); }, 420);
+
+    const time = performance.now();
+    rhythmHistory.push({ key, time });
+    rhythmHistory = rhythmHistory.slice(-6);
+    drawRhythmHistory();
+    updateRhythmStatus(time);
   }
 
   function releaseKey(key) {
     if (!keySettings[key]) return;
+    pressedKeys.delete(key);
     setButtonState(key, false);
+  }
+
+  function drawRhythmHistory() {
+    rhythmLines.forEach(function (line) { line.replaceChildren(); });
+    const first = rhythmHistory[0].time;
+    const span = rhythmHistory[rhythmHistory.length - 1].time - first;
+    rhythmHistory.forEach(function (press) {
+      const dot = document.createElement('span');
+      dot.className = 'rhythm-dot';
+      dot.style.left = `${span > 0 ? (press.time - first) / span * 100 : 50}%`;
+      dot.setAttribute('aria-hidden', 'true');
+      rhythmLines.find(line => line.dataset.key === press.key).appendChild(dot);
+    });
+  }
+
+  function checkRhythm(time) {
+    if (rhythmHistory.length < 6) return false;
+    const intervals = [];
+    for (let i = 1; i < rhythmHistory.length; i++) {
+      intervals.push(rhythmHistory[i].time - rhythmHistory[i - 1].time);
+    }
+    const average = intervals.reduce((total, gap) => total + gap, 0) / intervals.length;
+    if (average < 180 || average > 1600 || intervals.some(gap => gap > 2200)) return false;
+    const difference = intervals.reduce((total, gap) => total + Math.abs(gap - average), 0) / intervals.length;
+    const pauseLimit = clamp(average * 1.8, 650, 2200);
+    return difference / average <= 0.28 && time - rhythmHistory[5].time <= pauseLimit;
+  }
+
+  function updateRhythmStatus(time) {
+    playerARhythmStable = checkRhythm(time);
+    const label = playerARhythmStable ? 'Rhythm stable' : 'Keep a steady rhythm';
+    if (rhythmStatus.textContent !== label) rhythmStatus.textContent = label;
   }
 
   function getStabilityLabel(stability) {
@@ -242,6 +324,7 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     updateFeedback(values.stability);
 
     applyAudioState();
+    updateRhythmStatus(performance.now());
   }
   function updateFeedback(stability) {
     const roughness = 1 - stability;
@@ -289,12 +372,21 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     if (!keySettings[key]) return;
 
     event.preventDefault();
-    if (!event.repeat) triggerKey(key);
+    if (event.repeat || pressedKeys.has(key)) return;
+    pressedKeys.add(key);
+    triggerKey(key);
   });
 
   document.addEventListener('keyup', function (event) {
     releaseKey(event.key.toLowerCase());
   });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      pointer.inside = false;
+      updateSharedState();
+    }
+  });
+
   window.addEventListener('blur', function () {
     Object.keys(keySettings).forEach(releaseKey);
     isDragging = false;
@@ -364,5 +456,6 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     stopDragging();
     Object.keys(keySettings).forEach(releaseKey);
   });
+  loadChords();
   window.requestAnimationFrame(animateTarget);
 })();

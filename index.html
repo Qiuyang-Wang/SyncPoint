@@ -3,37 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SyncPoint — Sound Study</title>
+  <title>SyncPoint</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <main class="prototype-shell">
   <header class="page-header">
     <h1>SyncPoint</h1>
-    <p>Follow the target point. The waveform becomes calmer as stability increases.</p>
+    <p>Play a rhythm and follow the target.</p>
   </header>
   <section class="interaction-grid" aria-label="Two-player audio interface">
     <section class="player-panel player-a" aria-labelledby="player-a-title">
       <div class="section-heading">
         <p>Player A</p>
-        <h2 id="player-a-title">Rhythm Input</h2>
+        <h2 id="player-a-title">Rhythm</h2>
       </div>
-      <div class="key-grid" aria-label="Sound controls">
-        <button class="sound-key" type="button" data-key="a" aria-label="Play sound A">
-          <span>A</span>
-        </button>
-        <button class="sound-key" type="button" data-key="s" aria-label="Play sound S">
-          <span>S</span>
-        </button>
-        <button class="sound-key" type="button" data-key="d" aria-label="Play sound D">
-          <span>D</span>
-        </button>
-        <button class="sound-key" type="button" data-key="f" aria-label="Play sound F">
-          <span>F</span>
-        </button>
+      <div class="rhythm-history" aria-label="Last six rhythm inputs">
+        <div class="rhythm-row"><span>A</span><div class="rhythm-line" data-key="a"></div></div>
+        <div class="rhythm-row"><span>S</span><div class="rhythm-line" data-key="s"></div></div>
+        <div class="rhythm-row"><span>D</span><div class="rhythm-line" data-key="d"></div></div>
+        <div class="rhythm-row"><span>F</span><div class="rhythm-line" data-key="f"></div></div>
+      </div>
+      <div class="key-grid" aria-label="Guitar chord controls">
+        <div class="rhythm-lane" data-key="a">
+          <div class="lane-beams" aria-hidden="true"></div>
+          <button class="sound-key" type="button" data-key="a" aria-label="Play C Major with A">
+            <span>A</span><small>C Major</small>
+          </button>
+        </div>
+        <div class="rhythm-lane" data-key="s">
+          <div class="lane-beams" aria-hidden="true"></div>
+          <button class="sound-key" type="button" data-key="s" aria-label="Play D Major with S">
+            <span>S</span><small>D Major</small>
+          </button>
+        </div>
+        <div class="rhythm-lane" data-key="d">
+          <div class="lane-beams" aria-hidden="true"></div>
+          <button class="sound-key" type="button" data-key="d" aria-label="Play F Major with D">
+            <span>D</span><small>F Major</small>
+          </button>
+        </div>
+        <div class="rhythm-lane" data-key="f">
+          <div class="lane-beams" aria-hidden="true"></div>
+          <button class="sound-key" type="button" data-key="f" aria-label="Play G Major with F">
+            <span>F</span><small>G Major</small>
+          </button>
+        </div>
       </div>
 
-      <p class="panel-instruction">Press Keys Or Click</p>
+
+      <p class="panel-instruction">Press keys or click</p>
     </section>
     <section class="sync-panel" aria-labelledby="sync-title">
       <p>Shared State</p>
@@ -71,6 +90,7 @@
   </section>
   <p class="audio-message" role="status" aria-live="polite"></p>
 </main>
+<script src="assets/audio/chords.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

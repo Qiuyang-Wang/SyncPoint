@@ -71,14 +71,14 @@ h1 {
 .interaction-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) 180px minmax(320px, 1.35fr);
+  grid-template-columns: minmax(280px, 1fr) 250px minmax(320px, 1.2fr);
   min-height: 520px;
   border-bottom: 1px solid var(--ink);
 }
 
 .player-panel,
 .sync-panel {
-  padding: 34px 30px;
+  padding: 34px 24px;
 }
 
 .player-a {
@@ -101,32 +101,115 @@ h1 {
   flex-direction: column;
 }
 
-.key-grid {
-  width: min(100%, 310px);
-  margin: auto;
+.rhythm-history {
+  margin: 34px 0 22px;
+}
+
+.rhythm-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 18px 1fr;
   gap: 10px;
+  height: 25px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.rhythm-line {
+  height: 1px;
+  margin: 0 6px;
+  background: #b6b6b6;
+  position: relative;
+}
+
+.rhythm-dot {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3b30;
+  transform: translate(-50%, -50%);
+}
+
+.key-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: auto 0 0;
+}
+
+.rhythm-lane {
+  position: relative;
+  padding-top: 166px;
+  min-width: 0;
+}
+
+.lane-beams {
+  position: absolute;
+  inset: 0 0 76px;
+  overflow: hidden;
+  border-left: 1px solid #c4c4c4;
+  border-right: 1px solid #c4c4c4;
+  background: linear-gradient(transparent, #cecece);
+  pointer-events: none;
+}
+
+.lane-beam {
+  position: absolute;
+  bottom: -55px;
+  left: 15%;
+  width: 70%;
+  height: 55px;
+  background: linear-gradient(transparent, #ffffff);
+  animation: beam-rise 400ms ease-out forwards;
+}
+
+@keyframes beam-rise {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-240px); opacity: 0; }
 }
 
 .sound-key {
-  aspect-ratio: 1;
+  position: relative;
+  width: 100%;
+  height: 76px;
   border: 1px solid var(--ink);
   border-radius: 0;
   background: var(--panel);
   color: var(--accent);
   cursor: pointer;
   display: flex;
+  flex-direction: column;
+  gap: 7px;
   align-items: center;
   justify-content: center;
-  padding: 14px;
+  padding: 8px 2px;
   font: inherit;
   transition: background-color 70ms linear, color 70ms linear, transform 70ms linear;
 }
 
 .sound-key span {
-  font-size: clamp(2.1rem, 5vw, 4rem);
+  font-size: 2.1rem;
   line-height: 1;
+}
+
+.sound-key small {
+  color: var(--muted);
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.sound-key.is-active small {
+  color: #e8e8e8;
+}
+
+.rhythm-status {
+  min-height: 1rem;
+  margin: 18px 0 0;
+  font-size: 0.7rem;
+  color: var(--muted);
 }
 
 .sound-key:hover {
@@ -154,6 +237,9 @@ h1 {
 }
 
 .sync-panel {
+  position: relative;
+  padding-right: 20px;
+  padding-left: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -162,8 +248,9 @@ h1 {
 }
 
 .sync-display {
-  width: 120px;
-  height: 120px;
+  position: relative;
+  width: 208px;
+  height: 208px;
   flex-shrink: 0;
   margin: 38px 0 20px;
   display: grid;
@@ -177,8 +264,8 @@ h1 {
 
 .feedback-svg {
   display: block;
-  width: 120px;
-  height: 120px;
+  width: 166px;
+  height: 166px;
   overflow: visible;
 }
 
@@ -308,9 +395,9 @@ h1 {
   }
 
   .key-grid {
-    max-width: 280px;
-    margin-top: 36px;
-    margin-bottom: 36px;
+    max-width: none;
+    margin-top: 16px;
+    margin-bottom: 0;
   }
 
   .spatial-field {
@@ -322,4 +409,29 @@ h1 {
   * {
     transition: none !important;
   }
+}
+
+
+.sync-panel > p:not(.sync-status) {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 1000px) and (min-width: 821px) {
+  .prototype-shell { width: calc(100% - 32px); }
+  .interaction-grid { grid-template-columns: minmax(240px, 1fr) 218px minmax(280px, 1.1fr); }
+  .player-panel { padding-right: 14px; padding-left: 14px; }
+  .sync-display { width: 180px; height: 180px; }
+  .feedback-svg { width: 146px; height: 146px; }
+  .key-grid { gap: 5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lane-beam { animation-name: beam-soft; }
+}
+
+@keyframes beam-soft {
+  from { bottom: 0; opacity: 1; }
+  to { bottom: 0; opacity: 0; }
 }
