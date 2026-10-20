@@ -412,10 +412,69 @@ h1 {
 }
 
 
-.sync-panel > p:not(.sync-status) {
+.cooperation-ring {
+  --progress: 0turn;
+  position: absolute;
+  inset: 0;
+  border: 1px solid #aaaaaa;
+  border-radius: 50%;
+}
+
+.cooperation-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: conic-gradient(var(--ink) var(--progress), transparent var(--progress));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+}
+
+.cooperation-ring.is-flashing::before {
+  animation: ring-flash 500ms linear 4;
+}
+
+@keyframes ring-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.hold-message {
+  min-height: 36px;
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.sync-panel > p:not(.hold-message):not(.sync-status) {
   margin: 0;
   font-size: 0.7rem;
   letter-spacing: 0.03em;
+}
+
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.88);
+}
+
+.result-overlay[hidden] {
+  display: none;
+}
+
+.result-text {
+  margin: 0;
+  color: #d6d6d6;
+  font-size: clamp(3rem, 9vw, 7rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.result-overlay.is-perfect .result-text {
+  color: #ffd84a;
 }
 
 @media (max-width: 1000px) and (min-width: 821px) {

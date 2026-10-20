@@ -10,7 +10,7 @@
 <main class="prototype-shell">
   <header class="page-header">
     <h1>SyncPoint</h1>
-    <p>Play a rhythm and follow the target.</p>
+    <p>Keep a steady rhythm together and follow the target.</p>
   </header>
   <section class="interaction-grid" aria-label="Two-player audio interface">
     <section class="player-panel player-a" aria-labelledby="player-a-title">
@@ -55,8 +55,10 @@
       <p class="panel-instruction">Press keys or click</p>
     </section>
     <section class="sync-panel" aria-labelledby="sync-title">
+      <p class="hold-message" aria-live="assertive"></p>
       <p>Shared State</p>
       <div class="sync-display" aria-hidden="true">
+        <div class="cooperation-ring"></div>
         <svg class="feedback-svg" viewBox="0 0 120 120">
           <circle class="wave-frame" cx="60" cy="60" r="56" />
           <path class="waveform" d="M 16 60 L 104 60" />
@@ -90,6 +92,7 @@
   </section>
   <p class="audio-message" role="status" aria-live="polite"></p>
 </main>
+<div class="result-overlay" hidden role="status" aria-live="assertive"><p class="result-text"></p></div>
 <script src="assets/audio/chords.js"></script>
 <script src="script.js"></script>
 </body>

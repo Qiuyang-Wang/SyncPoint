@@ -73,10 +73,22 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   let journeyDuration = 2800;
   const rhythmLines = Array.from(document.querySelectorAll('.rhythm-line'));
   const rhythmStatus = document.querySelector('.rhythm-status');
+  const cooperationRing = document.querySelector('.cooperation-ring');
+  const holdMessage = document.querySelector('.hold-message');
+  const resultOverlay = document.querySelector('.result-overlay');
+  const resultText = document.querySelector('.result-text');
   const pressedKeys = new Set();
   const buttonTimers = {};
   let rhythmHistory = [];
   let playerARhythmStable = false;
+  let playerBStable = false;
+  let ringProgress = 0;
+  let stableStartTime = null;
+  let isFinalHold = false;
+  let finalHoldStartedAt = null;
+  let finalHoldFailed = false;
+  let resultActive = false;
+  let resultStartedAt = null;
 
   let audioContext;
   let filterNode;
@@ -248,7 +260,7 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     rhythmHistory.push({ key, time });
     rhythmHistory = rhythmHistory.slice(-6);
     drawRhythmHistory();
-    updateRhythmStatus(time);
+    updateCooperation(time);
   }
 
   function releaseKey(key) {
@@ -283,10 +295,60 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     return difference / average <= 0.28 && time - rhythmHistory[5].time <= pauseLimit;
   }
 
-  function updateRhythmStatus(time) {
+  function resetCooperation() {
+    ringProgress = 0;
+    stableStartTime = null;
+    isFinalHold = false;
+    finalHoldStartedAt = null;
+    finalHoldFailed = false;
+    resultActive = false;
+    resultStartedAt = null;
+    resultOverlay.hidden = true;
+    resultOverlay.classList.remove('is-perfect');
+    holdMessage.textContent = '';
+    cooperationRing.classList.remove('is-flashing');
+    cooperationRing.style.setProperty('--progress', '0turn');
+  }
+
+  function updateCooperation(time) {
     playerARhythmStable = checkRhythm(time);
     const label = playerARhythmStable ? 'Rhythm stable' : 'Keep a steady rhythm';
     if (rhythmStatus.textContent !== label) rhythmStatus.textContent = label;
+    playerBStable = pointer.inside && currentSpatialValues.stability >= 0.7;
+    const bothStable = playerARhythmStable && playerBStable && !document.hidden;
+
+    if (resultActive) {
+      if (time - resultStartedAt >= 2000) resetCooperation();
+      return;
+    }
+
+    if (isFinalHold) {
+      if (!bothStable) finalHoldFailed = true;
+      if (time - finalHoldStartedAt >= 2000) {
+        resultActive = true;
+        resultStartedAt = time;
+        resultText.textContent = finalHoldFailed ? 'Try Again' : 'Perfect';
+        resultOverlay.classList.toggle('is-perfect', !finalHoldFailed);
+        resultOverlay.hidden = false;
+      }
+      return;
+    }
+
+    if (bothStable) {
+      if (stableStartTime === null) stableStartTime = time;
+      ringProgress = Math.min((time - stableStartTime) / 8000, 1);
+      if (ringProgress >= 1) {
+        isFinalHold = true;
+        finalHoldStartedAt = time;
+        finalHoldFailed = false;
+        holdMessage.textContent = 'Maintain Stability!!';
+        cooperationRing.classList.add('is-flashing');
+      }
+    } else {
+      stableStartTime = null;
+      ringProgress = 0;
+    }
+    cooperationRing.style.setProperty('--progress', `${ringProgress}turn`);
   }
 
   function getStabilityLabel(stability) {
@@ -324,7 +386,7 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
     updateFeedback(values.stability);
 
     applyAudioState();
-    updateRhythmStatus(performance.now());
+    updateCooperation(performance.now());
   }
   function updateFeedback(stability) {
     const roughness = 1 - stability;
@@ -383,6 +445,8 @@ if (typeof module !== 'undefined') module.exports = SpatialMapping;
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
       pointer.inside = false;
+      if (isFinalHold) finalHoldFailed = true;
+      else stableStartTime = null;
       updateSharedState();
     }
   });
