@@ -1,3 +1,5 @@
+/* A grey-white background is used to set the industrial design tone, with red representing Player A and dark blue representing Player B.
+Colours are defined centrally first, with corresponding accent colours then applied to specific areas. */
 :root {
   color-scheme: light;
   --ink: #222222;
@@ -8,6 +10,7 @@
   --accent: #d82e2f;
 }
 
+/* Borders and padding are both included in the width and height measurements; the dimensions of the grid and audio track are calculated using the same model. */
 * {
   box-sizing: border-box;
 }
@@ -17,6 +20,7 @@ body {
   min-height: 100%;
 }
 
+/*Use a sans-serif font for the main text, with uniform line spacing. Fonts not installed on the computer will be replaced by the system font.*/
 body {
   margin: 0;
   background: var(--paper);
@@ -26,12 +30,16 @@ body {
 }
 
 button,
-.spatial-field {
+.spatialField {
   -webkit-tap-highlight-color: transparent;
 }
 
-.prototype-shell {
-  width: min(1180px, calc(100% - 48px));
+/*
+The maximum width of the main content area is 1280px, with white space on either side on wide screens.
+On narrow screens, the width is reduced to fit the available space, whilst the content remains centred.
+*/
+.prototypeShell {
+  width: min(1280px, calc(100% - 64px));
   min-height: 100vh;
   margin: 0 auto;
   padding: 42px 0 28px;
@@ -39,73 +47,65 @@ button,
   flex-direction: column;
 }
 
-.page-header {
-  border-bottom: 1px solid var(--ink);
-  padding: 18px 0 22px;
-}
-
-.section-heading p,
-.sync-panel > p:first-child,
-.panel-instruction,
-.spatial-status,
-.sync-status {
+/*First, let us outline the participants, followed by a description of the tasks under the headings below. The colours of the letters distinguish between the two roles.*/
+.sectionHeading p {
   margin: 0;
-  font-size: 0.7rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   letter-spacing: 0.03em;
 }
 
-h1 {
-  margin: 0 0 8px;
-  font-size: clamp(1.75rem, 4vw, 3.1rem);
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
+.playerA .playerLetter {
+  color: var(--accent);
 }
 
-.page-header > p:last-child {
-  margin: 0;
-  color: #444444;
-  font-size: 1rem;
+.playerB .playerLetter {
+  color: #183b97;
 }
 
-.interaction-grid {
-  flex: 1;
+/*
+The desktop version consists of left and right control areas and a central feedback area.
+The spacing between the columns varies according to the width of the window, with white space left between the three areas.
+*/
+.interactionGrid {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) 250px minmax(320px, 1.2fr);
-  min-height: 520px;
-  border-bottom: 1px solid var(--ink);
+  grid-template-columns: minmax(0, 1fr) 232px minmax(0, 1fr);
+  column-gap: clamp(32px, 4.5vw, 64px);
+  align-items: start;
 }
 
-.player-panel,
-.sync-panel {
-  padding: 34px 24px;
+.playerPanel,
+.syncPanel {
+  padding: 34px 0;
 }
 
-.player-a {
-  border-right: 1px solid var(--line);
-}
-
-.player-b {
-  border-left: 1px solid var(--line);
-}
-
-.section-heading h2,
-.sync-panel h2 {
+/*
+The different font sizes of the task titles and role labels create a hierarchy, with the ‘Sync Point’ in the middle displayed in a larger font.
+*/
+.sectionHeading h2,
+.syncPanel h2 {
   margin: 8px 0 0;
   font-size: 1.35rem;
   font-weight: 400;
 }
 
-.player-panel {
+.syncPanel h2 {
+  font-size: 2rem;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.playerPanel {
   display: flex;
   flex-direction: column;
 }
 
-.rhythm-history {
+/* The tempo mark is placed above the track, with the four lines arranged in a fixed order: A, S, D, F.*/
+.rhythmHistory {
   margin: 34px 0 22px;
 }
 
-.rhythm-row {
+.rhythmRow {
   display: grid;
   grid-template-columns: 18px 1fr;
   gap: 10px;
@@ -115,14 +115,15 @@ h1 {
   font-size: 0.65rem;
 }
 
-.rhythm-line {
+.rhythmLine {
   height: 1px;
   margin: 0 6px;
   background: #b6b6b6;
   position: relative;
 }
 
-.rhythm-dot {
+/*A red dot indicates a valid input. Its horizontal position is calculated from the timestamp, and the centre of the circle aligns with the corresponding line.*/
+.rhythmDot {
   position: absolute;
   top: 50%;
   width: 8px;
@@ -132,21 +133,23 @@ h1 {
   transform: translate(-50%, -50%);
 }
 
-.key-grid {
+/*The four buttons are evenly spaced horizontally, with the audio tracks and buttons sharing the same column.*/
+.keyGrid {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
-  margin: auto 0 0;
+  margin: 0;
 }
 
-.rhythm-lane {
+.rhythmLane {
   position: relative;
   padding-top: 166px;
   min-width: 0;
 }
 
-.lane-beams {
+/*The beam container trims off the parts outside the audio track, whilst mouse events are still handled by the keys.*/
+.laneBeams {
   position: absolute;
   inset: 0 0 76px;
   overflow: hidden;
@@ -156,7 +159,8 @@ h1 {
   pointer-events: none;
 }
 
-.lane-beam {
+/*A white gradient beam moves upwards from the direction of the button and fades out within 400 milliseconds.*/
+.laneBeam {
   position: absolute;
   bottom: -55px;
   left: 15%;
@@ -167,11 +171,21 @@ h1 {
 }
 
 @keyframes beam-rise {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-240px); opacity: 0; }
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-240px);
+    opacity: 0;
+  }
 }
 
-.sound-key {
+/*
+The letters are the primary information displayed on the keys, with chord names shown below as secondary information.
+A short transition is used to indicate when a key is pressed.
+*/
+.soundKey {
   position: relative;
   width: 100%;
   height: 76px;
@@ -190,56 +204,53 @@ h1 {
   transition: background-color 70ms linear, color 70ms linear, transform 70ms linear;
 }
 
-.sound-key span {
+.soundKey span {
   font-size: 2.1rem;
   line-height: 1;
 }
 
-.sound-key small {
+.soundKey small {
   color: var(--muted);
   font-size: 0.62rem;
   white-space: nowrap;
 }
 
-.sound-key.is-active small {
+.soundKey.isActive small {
   color: #e8e8e8;
 }
 
-.rhythm-status {
-  min-height: 1rem;
-  margin: 18px 0 0;
-  font-size: 0.7rem;
-  color: var(--muted);
-}
-
-.sound-key:hover {
+.soundKey:hover {
   background: #f4f4f4;
 }
 
-.sound-key.is-active,
-.sound-key:active {
+/*
+Add keyboard feedback for event-type links, and supplement the ‘active’ pseudo-class to display when the mouse button is pressed.
+*/
+.soundKey.isActive,
+.soundKey:active {
   background: var(--ink);
   color: var(--accent);
   transform: scale(0.975);
 }
 
-.sound-key:focus-visible,
-.spatial-field:focus-visible {
+/*
+The focus state of the audio buttons is indicated by a double outline, which is separate from the button’s border.
+*/
+.soundKey:focus-visible {
   outline: 3px double var(--ink);
   outline-offset: 4px;
 }
 
-.panel-instruction,
-.spatial-status {
-  margin-top: auto;
-  padding-top: 22px;
-  color: var(--muted);
+.spatialField:focus {
+  outline: none;
 }
 
-.sync-panel {
+/*
+The ‘Share Feedback’ text is vertically centred in the middle column. The circular container retains a fixed size to prevent changes to the internal graphics from pushing the text out of position.
+*/
+.syncPanel {
   position: relative;
-  padding-right: 20px;
-  padding-left: 20px;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -247,7 +258,7 @@ h1 {
   text-align: center;
 }
 
-.sync-display {
+.syncDisplay {
   position: relative;
   width: 208px;
   height: 208px;
@@ -257,48 +268,79 @@ h1 {
   place-items: center;
 }
 
-.sync-status {
-  margin-top: 8px;
-  color: var(--muted);
+/*
+This set of dot and pointer styles is intended for use on the early feedback branch; the current page displays a waveform.
+*/
+.syncPoint {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--accent);
+  transition: width 80ms linear, height 80ms linear;
 }
 
-.feedback-svg {
+.feedbackSvg {
   display: block;
   width: 166px;
   height: 166px;
   overflow: visible;
 }
 
-.wave-frame {
+/*Vector graphics are drawn using outlines, whilst the interior remains transparent. The black ring in the centre serves as a fixed reference point.*/
+.ringTrack,
+.waveFrame {
   fill: none;
   stroke: var(--ink);
   stroke-width: 2;
 }
 
-.waveform {
+.progressFill {
   fill: none;
   stroke: var(--accent);
+  stroke-width: 8;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 80ms linear;
+}
+
+.progressHand,
+.waveform {
+  fill: none;
+  stroke: #183b97;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.spatial-field {
+.progressHub {
+  fill: var(--accent);
+}
+
+/*
+The spatial grid remains square, with fine light blue lines providing positional references.
+The dark blue border defines the operational area, creating a separation from the background.
+*/
+.spatialField {
   position: relative;
-  flex: 1;
-  min-height: 300px;
+  flex: none;
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 0;
   margin-top: 34px;
   overflow: hidden;
-  border: 1px solid var(--ink);
+  border: 2px solid #183b97;
+  box-shadow: 0 0 0 1px #b6b6b6;
   background-color: var(--panel);
   background-image:
-          linear-gradient(var(--line) 1px, transparent 1px),
-          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+          linear-gradient(#bccdfb 1px, transparent 1px),
+          linear-gradient(90deg, #bccdfb 1px, transparent 1px);
   background-size: 25% 25%;
   cursor: none;
 }
 
-.axis-label {
+/*The four directional labels illustrate the relationship between sound image and filter brightness. The white background ensures that the text is clearly visible against the grid lines.*/
+.axisLabel {
   position: absolute;
   z-index: 1;
   padding: 4px;
@@ -308,17 +350,31 @@ h1 {
   letter-spacing: 0.08em;
 }
 
-.axis-left,
-.axis-right {
+.axisLeft,
+.axisRight {
   top: 50%;
   transform: translateY(-50%);
 }
 
-.axis-left { left: 7px; }
-.axis-right { right: 7px; }
-.axis-top { top: 7px; left: 50%; transform: translateX(-50%); }
-.axis-bottom { bottom: 7px; left: 50%; transform: translateX(-50%); }
+.axisLeft {
+  left: 7px;
+}
+.axisRight {
+  right: 7px;
+}
+.axisTop {
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.axisBottom {
+  bottom: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
+/*Black dots represent moving targets, whilst dark blue dots represent player input.<\n
+Neither of these receives mouse events; their coordinates are read centrally by the grid container.*/
 .target {
   position: absolute;
   left: 50%;
@@ -331,80 +387,78 @@ h1 {
   transform: translate(-50%, -50%);
 }
 
-.cursor-dot {
+.cursorDot {
   position: absolute;
   width: 12px;
   height: 12px;
   left: 50%;
   top: 50%;
   border-radius: 50%;
-  background: var(--accent);
+  background: #183b97;
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -50%);
 }
 
-.spatial-field.is-active .cursor-dot {
+/*鼠标处于有效输入状态时显示蓝点，离开网格后隐藏。*/
+.spatialField.isActive .cursorDot {
   opacity: 1;
 }
 
-.spatial-field[data-input-mode="click"],
-.spatial-field[data-input-mode="drag"]:not(.is-active) {
+.spatialField[data-input-mode="click"],
+.spatialField[data-input-mode="drag"]:not(.isActive) {
   cursor: crosshair;
 }
 
-.spatial-field[data-input-mode="drag"] {
+.spatialField[data-input-mode="drag"] {
   touch-action: none;
 }
 
-.audio-message {
+/*A separate status area is used to display audio loading or failure messages, with the height retained to minimise layout shifts when text appears.*/
+.audioMessage {
   min-height: 1rem;
   margin: 12px 0 0;
   color: var(--muted);
   font-size: 0.72rem;
 }
 
+/*
+When the window width is 820px or less, the three sections are arranged vertically.
+Each section retains its spacing, and the grid cells remain square in proportion to the container’s width.
+*/
 @media (max-width: 820px) {
-  .prototype-shell {
+  .prototypeShell {
     width: min(100% - 28px, 600px);
     padding-top: 24px;
   }
 
-  .interaction-grid {
+  .interactionGrid {
     grid-template-columns: 1fr;
+    row-gap: 32px;
   }
 
-  .player-a,
-  .player-b {
-    border: 0;
+  .playerPanel,
+  .syncPanel {
+    min-height: 0;
+    padding: 24px 0;
   }
 
-  .player-a,
-  .sync-panel {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .player-panel,
-  .sync-panel {
-    min-height: 420px;
-    padding: 28px 18px;
-  }
-
-  .sync-panel {
+  .syncPanel {
     min-height: 300px;
   }
 
-  .key-grid {
+  .keyGrid {
     max-width: none;
-    margin-top: 16px;
+    margin-top: 0;
     margin-bottom: 0;
   }
 
-  .spatial-field {
-    min-height: 330px;
+  .spatialField {
+    min-height: 0;
   }
 }
 
+/*When the system is set to minimise dynamic effects, interface transitions are disabled first. Alternative animations for the beam are defined later.*/
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
@@ -412,46 +466,180 @@ h1 {
 }
 
 
-.cooperation-ring {
+/*
+The border of the pale red ring is 2.5px, and the red progress bar is drawn within a separate pseudo-element.
+*/
+.cooperationRing {
   --progress: 0turn;
   position: absolute;
   inset: 0;
-  border: 1px solid #aaaaaa;
+  border: 2.5px solid #f2bbbb;
   border-radius: 50%;
 }
 
-.cooperation-ring::before {
+/*The conical gradient displays progress in a clockwise direction, whilst the radial mask determines the thickness of the filled ring.
+The border of the bottom ring and the red fill are controlled by different rules.*/
+.cooperationRing::before {
   content: "";
   position: absolute;
   inset: -1px;
   border-radius: 50%;
-  background: conic-gradient(var(--ink) var(--progress), transparent var(--progress));
+  background: conic-gradient(var(--accent) var(--progress), transparent var(--progress));
   mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
 }
 
-.cooperation-ring.is-flashing::before {
+/*
+The flashing cycle of the full ring lasts 500 milliseconds and is repeated four times, corresponding to the challenge in the final two seconds.
+*/
+.cooperationRing.isFlashing::before {
   animation: ring-flash 500ms linear 4;
 }
 
 @keyframes ring-flash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
 
-.hold-message {
+/*Allow for the height of the placeholder text so that, when the layout enters the final stabilisation phase, the central graphic does not shift due to the text.
+*/
+.holdMessage {
   min-height: 36px;
   margin: 0 0 12px;
   font-size: 0.82rem;
   font-weight: 600;
 }
 
-.sync-panel > p:not(.hold-message):not(.sync-status) {
+/*
+Guide: The word ‘Light’ is emphasised above the ‘Share Feedback’ section, and the red exclamation mark next to it indicates that instructions are available.
+*/
+.guideButton {
   margin: 0;
-  font-size: 0.7rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 300;
   letter-spacing: 0.03em;
+  cursor: pointer;
 }
 
-.result-overlay {
+.guideIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/*
+The text is displayed in a white pop-up window, with red and blue borders each occupying half of the window, corresponding to the two players.
+The pop-up window has a maximum height limit; when there is a lot of content, it scrolls internally.
+*/
+.guideDialog {
+  width: min(640px, calc(100% - 36px));
+  max-height: calc(100vh - 36px);
+  padding: 32px;
+  border: 2px solid transparent;
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+  linear-gradient(90deg, var(--accent) 50%, #183b97 50%) border-box;
+  color: #2b2b2b;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.75;
+  overflow-y: auto;
+}
+
+/*The semi-transparent background reduces the brightness of the interface behind it, drawing the reader’s attention to the pop-up window.*/
+.guideDialog::backdrop {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.guideDialog h2 {
+  margin: 0 0 20px;
+  font-size: 1.65rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.guideDialog p {
+  margin: 0 0 18px;
+}
+
+/*
+Key points are highlighted in bold; text in red and blue refers to the tasks for Player A and Player B respectively.
+*/
+.guideDialog strong {
+  font-weight: 700;
+}
+
+.guideRed {
+  color: var(--accent);
+}
+
+.guideBlue {
+  color: #183b97;
+}
+
+/*
+The ‘Confirm’ button is positioned at the bottom right of the content and serves as a close button once the user has finished reading.
+*/
+.guideActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.guideClose {
+  min-width: 76px;
+  padding: 8px 20px;
+  border: 1px solid #2b2b2b;
+  background: #ffffff;
+  color: #2b2b2b;
+  font: inherit;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.guideClose:hover {
+  background: #f3f3f3;
+}
+
+/*A 4px gap is maintained between the focus outline of the ‘Guide’ entry and the text button.*/
+.guideButton:focus-visible {
+  outline: 2px solid #183b97;
+  outline-offset: 4px;
+}
+
+.guideClose:focus-visible {
+  outline: none;
+}
+
+/*A narrower window reduces the inner margin of the pop-up, leaving more width for the explanatory text.*/
+@media (max-width: 480px) {
+  .guideDialog {
+    padding: 24px;
+  }
+}
+
+/*
+The results are overlaid on the page; once the background is dimmed, only the main visual hierarchy of the text results remains.
+Mouse events can pass through the overlay, and the underlying operations will still receive input.
+*/
+.resultOverlay {
   position: fixed;
   inset: 0;
   z-index: 10;
@@ -461,11 +649,14 @@ h1 {
   background: rgba(0, 0, 0, 0.88);
 }
 
-.result-overlay[hidden] {
+/*
+The ‘hidden’ property corresponds to the ‘hidden’ style; once the display has finished, the mask no longer occupies the display layer.
+*/
+.resultOverlay[hidden] {
   display: none;
 }
 
-.result-text {
+.resultText {
   margin: 0;
   color: #d6d6d6;
   font-size: clamp(3rem, 9vw, 7rem);
@@ -473,24 +664,46 @@ h1 {
   letter-spacing: -0.04em;
 }
 
-.result-overlay.is-perfect .result-text {
+/*Successful results are shown in yellow, whilst unsuccessful ones remain in light grey text.*/
+.resultOverlay.isPerfect .resultText {
   color: #ffd84a;
 }
 
+/*Between 821px and 1000px, retain the three-column layout, narrow the middle column and reduce the size of the circular feedback icon.*/
 @media (max-width: 1000px) and (min-width: 821px) {
-  .prototype-shell { width: calc(100% - 32px); }
-  .interaction-grid { grid-template-columns: minmax(240px, 1fr) 218px minmax(280px, 1.1fr); }
-  .player-panel { padding-right: 14px; padding-left: 14px; }
-  .sync-display { width: 180px; height: 180px; }
-  .feedback-svg { width: 146px; height: 146px; }
-  .key-grid { gap: 5px; }
+  .prototypeShell {
+    width: calc(100% - 32px);
+  }
+  .interactionGrid {
+    grid-template-columns: minmax(0, 1fr) 196px minmax(0, 1fr);
+  }
+  .syncDisplay {
+    width: 180px;
+    height: 180px;
+  }
+  .feedbackSvg {
+    width: 146px;
+    height: 146px;
+  }
+  .keyGrid {
+    gap: 5px;
+  }
 }
 
+/*When reducing the dynamic effects, the beam should fade out in place, and the upward movement should be removed.*/
 @media (prefers-reduced-motion: reduce) {
-  .lane-beam { animation-name: beam-soft; }
+  .laneBeam {
+    animation-name: beam-soft;
+  }
 }
 
 @keyframes beam-soft {
-  from { bottom: 0; opacity: 1; }
-  to { bottom: 0; opacity: 0; }
+  from {
+    bottom: 0;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }

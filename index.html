@@ -7,93 +7,155 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<main class="prototype-shell">
-  <header class="page-header">
-    <h1>SyncPoint</h1>
-    <p>Keep a steady rhythm together and follow the target.</p>
-  </header>
-  <section class="interaction-grid" aria-label="Two-player audio interface">
-    <section class="player-panel player-a" aria-labelledby="player-a-title">
-      <div class="section-heading">
-        <p>Player A</p>
-        <h2 id="player-a-title">Rhythm</h2>
-      </div>
-      <div class="rhythm-history" aria-label="Last six rhythm inputs">
-        <div class="rhythm-row"><span>A</span><div class="rhythm-line" data-key="a"></div></div>
-        <div class="rhythm-row"><span>S</span><div class="rhythm-line" data-key="s"></div></div>
-        <div class="rhythm-row"><span>D</span><div class="rhythm-line" data-key="d"></div></div>
-        <div class="rhythm-row"><span>F</span><div class="rhythm-line" data-key="f"></div></div>
-      </div>
-      <div class="key-grid" aria-label="Guitar chord controls">
-        <div class="rhythm-lane" data-key="a">
-          <div class="lane-beams" aria-hidden="true"></div>
-          <button class="sound-key" type="button" data-key="a" aria-label="Play C Major with A">
-            <span>A</span><small>C Major</small>
-          </button>
-        </div>
-        <div class="rhythm-lane" data-key="s">
-          <div class="lane-beams" aria-hidden="true"></div>
-          <button class="sound-key" type="button" data-key="s" aria-label="Play D Major with S">
-            <span>S</span><small>D Major</small>
-          </button>
-        </div>
-        <div class="rhythm-lane" data-key="d">
-          <div class="lane-beams" aria-hidden="true"></div>
-          <button class="sound-key" type="button" data-key="d" aria-label="Play F Major with D">
-            <span>D</span><small>F Major</small>
-          </button>
-        </div>
-        <div class="rhythm-lane" data-key="f">
-          <div class="lane-beams" aria-hidden="true"></div>
-          <button class="sound-key" type="button" data-key="f" aria-label="Play G Major with F">
-            <span>F</span><small>G Major</small>
-          </button>
-        </div>
+
+<!--The main content is organised in the order: Player A, shared state, Player B.
+  On desktop, the CSS displays the content in three columns; on narrow screens, it is arranged in the same reading order.-->
+<main class="prototypeShell">
+  <section class="interactionGrid" aria-label="Two-player audio interface">
+    <section class="playerPanel playerA" aria-labelledby="player-a-title">
+      <div class="sectionHeading">
+        <p>Player <span class="playerLetter">A</span></p>
+        <h2 id="player-a-title">Create Rhythm</h2>
       </div>
 
+      <!--The four lines of the stave correspond to four keys; the red dots are added by JavaScript based on the input time.-->
+      <div class="rhythmHistory" aria-label="Last six rhythm inputs">
+        <div class="rhythmRow">
+          <span>A</span>
+          <div class="rhythmLine" data-key="a"></div>
+        </div>
+        <div class="rhythmRow">
+          <span>S</span>
+          <div class="rhythmLine" data-key="s"></div>
+        </div>
+        <div class="rhythmRow">
+          <span>D</span>
+          <div class="rhythmLine" data-key="d"></div>
+        </div>
+        <div class="rhythmRow">
+          <span>F</span>
+          <div class="rhythmLine" data-key="f"></div>
+        </div>
 
-      <p class="panel-instruction">Press keys or click</p>
+      </div>
+      <!--Each column contains a beam area and a button. The `data-key` attribute maps the on-screen buttons to keyboard characters.-->
+      <div class="keyGrid" aria-label="Guitar chord controls">
+        <div class="rhythmLane" data-key="a">
+          <div class="laneBeams" aria-hidden="true"></div>
+          <button class="soundKey" type="button" data-key="a" aria-label="Play C Major with A">
+            <span>A</span>
+            <small>C Major</small>
+          </button>
+        </div>
+
+        <div class="rhythmLane" data-key="s">
+          <div class="laneBeams" aria-hidden="true"></div>
+          <button class="soundKey" type="button" data-key="s" aria-label="Play D Major with S">
+            <span>S</span>
+            <small>D Major</small>
+          </button>
+        </div>
+
+        <div class="rhythmLane" data-key="d">
+          <div class="laneBeams" aria-hidden="true"></div>
+          <button class="soundKey" type="button" data-key="d" aria-label="Play F Major with D">
+            <span>D</span>
+            <small>F Major</small>
+          </button>
+        </div>
+
+        <div class="rhythmLane" data-key="f">
+          <div class="laneBeams" aria-hidden="true"></div>
+          <button class="soundKey" type="button" data-key="f" aria-label="Play G Major with F">
+            <span>F</span>
+            <small>G Major</small>
+          </button>
+        </div>
+
+      </div>
     </section>
-    <section class="sync-panel" aria-labelledby="sync-title">
-      <p class="hold-message" aria-live="assertive"></p>
-      <p>Shared State</p>
-      <div class="sync-display" aria-hidden="true">
-        <div class="cooperation-ring"></div>
-        <svg class="feedback-svg" viewBox="0 0 120 120">
-          <circle class="wave-frame" cx="60" cy="60" r="56" />
+
+    <!--
+      The central area displays gameplay instructions, co-op progress and waveforms; both players share the same feedback.
+    -->
+    <section class="syncPanel" aria-labelledby="sync-title">
+      <p class="holdMessage" aria-live="assertive"></p>
+      <!--The text ‘Guide’ provides the name, whilst the exclamation mark serves as a decorative hint.-->
+      <button class="guideButton" type="button"
+              aria-haspopup="dialog" aria-controls="guide-dialog">
+        Guide <span class="guideIcon" aria-hidden="true">!</span>
+      </button>
+
+      <!--The SVG container provides a black ring and a wavy path as a reference; the outer progress ring is drawn separately using CSS.-->
+      <div class="syncDisplay" data-feedback="wave" aria-hidden="true">
+        <div class="cooperationRing"></div>
+        <svg class="feedbackSvg" viewBox="0 0 120 120">
+          <circle class="waveFrame" cx="60" cy="60" r="56" />
           <path class="waveform" d="M 16 60 L 104 60" />
         </svg>
       </div>
       <h2 id="sync-title">Sync Point</h2>
-      <p class="sync-status" aria-live="polite">Noisy</p>
     </section>
 
-    <section class="player-panel player-b" aria-labelledby="player-b-title">
-      <div class="section-heading">
-        <p>Player B</p>
-        <h2 id="player-b-title">Spatial Input</h2>
+    <!--Player B moves the mouse within the grid. The text explains the relationship between the position and the sound parameters.-->
+    <section class="playerPanel playerB" aria-labelledby="player-b-title">
+      <div class="sectionHeading">
+        <p>Player <span class="playerLetter">B</span></p>
+        <h2 id="player-b-title">Follow the Target's Movement</h2>
       </div>
       <div
-              class="spatial-field"
+              class="spatialField"
               data-input-mode="hover"
               role="application"
               tabindex="0"
               aria-label="Follow the moving filled dot. Closer sounds calmer; farther sounds noisier."
       >
-        <span class="axis-label axis-left">L</span>
-        <span class="axis-label axis-right">R</span>
-        <span class="axis-label axis-top">Bright</span>
-        <span class="axis-label axis-bottom">Muted</span>
+        <span class="axisLabel axisLeft">L</span>
+        <span class="axisLabel axisRight">R</span>
+        <span class="axisLabel axisTop">Bright</span>
+        <span class="axisLabel axisBottom">Muted</span>
         <div class="target" aria-hidden="true"></div>
-        <div class="cursor-dot" aria-hidden="true"></div>
+        <div class="cursorDot" aria-hidden="true"></div>
       </div>
-      <p class="spatial-status" aria-live="polite">Move to control</p>
     </section>
+
   </section>
-  <p class="audio-message" role="status" aria-live="polite"></p>
+  <!--
+    The audio status is indicated via this area, with `aria-live` enabling assistive technologies to receive subsequent updates.
+  -->
+  <p class="audioMessage" role="status" aria-live="polite"></p>
 </main>
-<div class="result-overlay" hidden role="status" aria-live="assertive"><p class="result-text"></p></div>
-<script src="assets/audio/chords.js"></script>
-<script src="script.js"></script>
+<!--
+  The results area is initially hidden; once the challenge concludes, a script populates it with the results and makes it visible.
+-->
+<div class="resultOverlay" hidden role="status" aria-live="assertive">
+  <p class="resultText"></p>
+</div>
+
+<!--
+  The native `dialog` element handles the pop-up window. The title is associated with the pop-up, while the body content uses color and font weight to highlight key actions.
+-->
+<dialog class="guideDialog" id="guide-dialog" aria-labelledby="guide-title">
+  <h2 id="guide-title">Welcome to Sync Point!</h2>
+  <p>This is a cooperative music synthesiser for two players. Player <strong
+          class="guideRed">A</strong> must tap out a <strong class="guideRed">steady rhythm</strong>
+    continuously to build up the ring’s progress. Player <strong class="guideBlue">B</strong>
+    must <strong class="guideBlue">follow the moving target</strong>; you’ll find that different
+    positions on the grid affect the left and right <strong>channels</strong> as well as the
+    <strong>pitch</strong> of the sound.</p>
+  <p>Keep going for <strong>10 seconds</strong> to succeed! If you’ve forgotten how to play,
+    feel free to come back and check this guide at any time.</p>
+  <div class="guideActions">
+    <button class="guideClose" type="button" autofocus>OK</button>
+  </div>
+</dialog>
+
+
+<!--
+  First, load the chord data, then run the interactive script. The interactive script is responsible for decoding and playing the data.
+-->
+<script src="assets/audio/chordAudioData.js"></script>
+<script src="synthesiser.js"></script>
 </body>
 </html>
+
