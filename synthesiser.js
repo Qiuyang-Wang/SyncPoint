@@ -1,5 +1,3 @@
-// 此脚本统一组织映射、声音和反馈
-
 'use strict';
 // Constrain the value to a given range. Even when the mouse moves outside the grid, the coordinates remain within the valid interval.
 function clamp(value, minimum, maximum) {
